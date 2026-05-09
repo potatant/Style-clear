@@ -7,7 +7,7 @@ Antariksha Dhanure · UBID 50676220 · University at Buffalo · HCI Spring 2025
 
 ## 🌐 Live Site
 
-**[antariksha-dhanure.github.io/styleclear](https://antariksha-dhanure.github.io/styleclear)**
+**[styleclear](https://potatant.github.io/Style-clear)**
 
 ---
 
