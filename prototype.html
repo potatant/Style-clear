@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StyleClear — HCI Redesign Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F7F5F2;--surface:#FFFFFF;--surface2:#F0EDE8;
+  --border:rgba(0,0,0,0.08);--border-md:rgba(0,0,0,0.14);--border-strong:rgba(0,0,0,0.22);
+  --text:#18170F;--text-2:#5C5A52;--text-3:#9E9C95;
+  --accent:#2A5C3F;--accent-lt:#EBF2ED;--accent-mid:#4A8C60;
+  --sale:#C0412A;--sale-bg:#FAEBE7;
+  --nav:64px;--side:268px;
+  --font-b:'DM Sans',sans-serif;--font-d:'Cormorant Garamond',serif;
+  --r:10px;--rl:16px;--rx:22px;
+  --ease:cubic-bezier(.22,.68,0,1.2);--ease-s:cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;overflow-x:hidden;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--text);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity .6s ease,visibility .6s ease;}
+#loader.gone{opacity:0;visibility:hidden;pointer-events:none;}
+.loader-logo{font-family:var(--font-d);font-size:42px;color:#fff;letter-spacing:1px;}
+.loader-bar{width:180px;height:1.5px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;}
+.loader-fill{height:100%;background:#fff;border-radius:99px;animation:loadbar 1.8s var(--ease-s) forwards;}
+@keyframes loadbar{from{width:0}to{width:100%}}
+
+/* PRODUCT IMAGE ILLUSTRATIONS — pure CSS fashion visuals */
+.prod-visual{width:100%;height:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+
+/* Card 1 - Dark graphic sweatshirt */
+.vis-1{background:linear-gradient(160deg,#1a1a1a 0%,#2d2d2d 100%);}
+.vis-1::before{content:'';position:absolute;width:55%;height:62%;background:#242424;border-radius:4px 4px 0 0;top:16%;left:22%;box-shadow:inset 0 0 30px rgba(0,0,0,.4);}
+.vis-1::after{content:'B';position:absolute;font-family:Georgia,serif;font-size:52px;font-weight:900;color:rgba(255,255,255,.12);top:30%;left:50%;transform:translateX(-50%);letter-spacing:-2px;}
+.vis-1 .sleeve-l{position:absolute;width:18%;height:38%;background:#242424;border-radius:6px;top:19%;left:8%;transform:rotate(8deg);}
+.vis-1 .sleeve-r{position:absolute;width:18%;height:38%;background:#242424;border-radius:6px;top:19%;right:8%;transform:rotate(-8deg);}
+.vis-1 .collar{position:absolute;width:22%;height:6%;background:#1a1a1a;border-radius:0 0 50% 50%;top:16%;left:39%;}
+.vis-1 .logo-badge{position:absolute;bottom:28%;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.25);letter-spacing:3px;font-family:var(--font-b);font-weight:500;}
+
+/* Card 2 - White sports tee on athletic body */
+.vis-2{background:linear-gradient(170deg,#e8f0ed 0%,#d0ddd8 100%);}
+.vis-2::before{content:'';position:absolute;width:48%;height:58%;background:#f5f5f5;border-radius:4px 4px 2px 2px;top:18%;left:26%;box-shadow:2px 4px 12px rgba(0,0,0,.08);}
+.vis-2::after{content:'';position:absolute;width:48%;height:58%;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.04));top:18%;left:26%;}
+.vis-2 .sleeve-l{position:absolute;width:20%;height:30%;background:#f5f5f5;border-radius:6px;top:20%;left:10%;transform:rotate(12deg);}
+.vis-2 .sleeve-r{position:absolute;width:20%;height:30%;background:#f5f5f5;border-radius:6px;top:20%;right:10%;transform:rotate(-12deg);}
+.vis-2 .collar{position:absolute;width:20%;height:5%;background:#ebebeb;border-radius:0 0 50% 50%;top:18%;left:40%;}
+.vis-2 .stripe{position:absolute;width:48%;height:3px;background:rgba(42,92,63,.2);top:45%;left:26%;}
+
+/* Card 3 - Dark green oversized tee */
+.vis-3{background:linear-gradient(165deg,#1e2d20 0%,#2c3e2d 100%);}
+.vis-3::before{content:'';position:absolute;width:56%;height:64%;background:#2c3e2d;border-radius:3px;top:15%;left:22%;}
+.vis-3::after{content:'OLE';position:absolute;font-family:monospace;font-size:20px;font-weight:900;color:rgba(255,255,255,.15);top:42%;left:50%;transform:translateX(-50%);letter-spacing:4px;}
+.vis-3 .sleeve-l{position:absolute;width:20%;height:42%;background:#2c3e2d;border-radius:6px;top:17%;left:7%;transform:rotate(6deg);}
+.vis-3 .sleeve-r{position:absolute;width:20%;height:42%;background:#2c3e2d;border-radius:6px;top:17%;right:7%;transform:rotate(-6deg);}
+.vis-3 .collar{position:absolute;width:24%;height:6%;background:#1e2d20;border-radius:0 0 50% 50%;top:15%;left:38%;}
+
+/* Card 4 - Floral midi dress */
+.vis-4{background:linear-gradient(170deg,#f5ede0 0%,#ead8c0 100%);}
+.vis-4::before{content:'';position:absolute;width:45%;height:72%;background:linear-gradient(180deg,#c9a87c 0%,#b8936a 100%);border-radius:3px 3px 60px 60px;top:12%;left:27%;}
+.vis-4::after{content:'';position:absolute;width:45%;height:72%;background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0px,rgba(255,255,255,.06) 2px,transparent 2px,transparent 8px);top:12%;left:27%;}
+.vis-4 .collar{position:absolute;width:18%;height:5%;background:#b8936a;border-radius:0 0 50% 50%;top:12%;left:41%;}
+.vis-4 .flower1{position:absolute;width:22px;height:22px;background:rgba(255,255,255,.3);border-radius:50%;top:35%;left:30%;}
+.vis-4 .flower2{position:absolute;width:16px;height:16px;background:rgba(255,180,160,.4);border-radius:50%;top:50%;right:28%;}
+.vis-4 .flower3{position:absolute;width:18px;height:18px;background:rgba(255,255,255,.2);border-radius:50%;top:60%;left:40%;}
+.vis-4 .belt{position:absolute;width:45%;height:3px;background:rgba(120,80,40,.25);top:38%;left:27%;}
+
+/* Card 5 - Beige cardigan */
+.vis-5{background:linear-gradient(165deg,#e8e0d6 0%,#d8cfc4 100%);}
+.vis-5::before{content:'';position:absolute;width:52%;height:66%;background:#c8bfb4;border-radius:4px;top:14%;left:24%;}
+.vis-5::after{content:'';position:absolute;width:52%;height:66%;background:repeating-linear-gradient(0deg,transparent 0px,transparent 5px,rgba(0,0,0,.04) 5px,rgba(0,0,0,.04) 6px);top:14%;left:24%;}
+.vis-5 .sleeve-l{position:absolute;width:20%;height:48%;background:#c8bfb4;border-radius:6px;top:16%;left:8%;transform:rotate(4deg);}
+.vis-5 .sleeve-r{position:absolute;width:20%;height:48%;background:#c8bfb4;border-radius:6px;top:16%;right:8%;transform:rotate(-4deg);}
+.vis-5 .collar{position:absolute;width:26%;height:18%;background:#b8afa4;clip-path:polygon(0 0,100% 0,50% 100%);top:14%;left:37%;}
+.vis-5 .button1{position:absolute;width:6px;height:6px;background:#a09088;border-radius:50%;top:38%;left:50%;transform:translateX(-50%);}
+.vis-5 .button2{position:absolute;width:6px;height:6px;background:#a09088;border-radius:50%;top:50%;left:50%;transform:translateX(-50%);}
+.vis-5 .button3{position:absolute;width:6px;height:6px;background:#a09088;border-radius:50%;top:62%;left:50%;transform:translateX(-50%);}
+
+/* Card 6 - Olive cargo pants */
+.vis-6{background:linear-gradient(165deg,#3a4235 0%,#4a5242 100%);}
+.vis-6::before{content:'';position:absolute;width:22%;height:68%;background:#566050;border-radius:4px 4px 2px 2px;top:16%;left:24%;}
+.vis-6::after{content:'';position:absolute;width:22%;height:68%;background:#566050;border-radius:4px 4px 2px 2px;top:16%;right:24%;}
+.vis-6 .waist{position:absolute;width:46%;height:8%;background:#4a5242;border-radius:3px;top:16%;left:27%;border-top:2px solid rgba(255,255,255,.1);}
+.vis-6 .pocket-l{position:absolute;width:14%;height:12%;background:rgba(0,0,0,.2);border-radius:3px;border:.5px solid rgba(255,255,255,.08);top:40%;left:22%;}
+.vis-6 .pocket-r{position:absolute;width:14%;height:12%;background:rgba(0,0,0,.2);border-radius:3px;border:.5px solid rgba(255,255,255,.08);top:40%;right:22%;}
+
+/* Card 7 - White linen dress */
+.vis-7{background:linear-gradient(170deg,#f0ece4 0%,#e4ddd2 100%);}
+.vis-7::before{content:'';position:absolute;width:42%;height:76%;background:#f8f5ef;border-radius:3px 3px 8px 8px;top:10%;left:29%;box-shadow:2px 4px 20px rgba(0,0,0,.06);}
+.vis-7 .collar{position:absolute;width:18%;height:6%;background:#eeebe4;top:10%;left:41%;border-radius:0 0 50% 50%;}
+.vis-7 .btn1{position:absolute;width:5px;height:5px;background:#d8d0c4;border-radius:50%;top:22%;left:50%;transform:translateX(-50%);}
+.vis-7 .btn2{position:absolute;width:5px;height:5px;background:#d8d0c4;border-radius:50%;top:30%;left:50%;transform:translateX(-50%);}
+.vis-7 .btn3{position:absolute;width:5px;height:5px;background:#d8d0c4;border-radius:50%;top:38%;left:50%;transform:translateX(-50%);}
+.vis-7 .belt{position:absolute;width:42%;height:2px;background:#c8c0b4;top:46%;left:29%;}
+.vis-7 .shadow{position:absolute;width:42%;height:76%;background:linear-gradient(90deg,rgba(0,0,0,.03),transparent,rgba(0,0,0,.03));top:10%;left:29%;}
+
+/* Card 8 - Leather bag */
+.vis-8{background:linear-gradient(165deg,#2a2218 0%,#3a3020 100%);}
+.vis-8::before{content:'';position:absolute;width:52%;height:46%;background:#8B6914;border-radius:8px;top:30%;left:24%;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.vis-8::after{content:'';position:absolute;width:52%;height:46%;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%);top:30%;left:24%;border-radius:8px;}
+.vis-8 .strap{position:absolute;width:3px;height:28%;background:#7A5C10;top:8%;left:50%;transform:translateX(-50%);border-radius:2px;}
+.vis-8 .clasp{position:absolute;width:14%;height:5%;background:#A07820;border-radius:3px;top:50%;left:43%;box-shadow:0 2px 4px rgba(0,0,0,.3);}
+.vis-8 .stitch{position:absolute;width:52%;height:46%;border:1px dashed rgba(255,255,255,.08);border-radius:7px;top:31%;left:24.5%;}
+
+/* HOVER ALTERNATE VISUALS */
+.vis-1-alt{background:linear-gradient(160deg,#1a1a2e 0%,#16213e 100%);}
+.vis-1-alt::before{content:'';position:absolute;width:55%;height:62%;background:#1f2944;border-radius:4px 4px 0 0;top:16%;left:22%;}
+.vis-1-alt::after{content:'B';position:absolute;font-family:Georgia,serif;font-size:52px;font-weight:900;color:rgba(100,140,255,.15);top:30%;left:50%;transform:translateX(-50%);}
+.vis-1-alt .sleeve-l{position:absolute;width:18%;height:38%;background:#1f2944;border-radius:6px;top:19%;left:8%;transform:rotate(8deg);}
+.vis-1-alt .sleeve-r{position:absolute;width:18%;height:38%;background:#1f2944;border-radius:6px;top:19%;right:8%;transform:rotate(-8deg);}
+.vis-1-alt .collar{position:absolute;width:22%;height:6%;background:#1a1a2e;border-radius:0 0 50% 50%;top:16%;left:39%;}
+
+.vis-2-alt{background:linear-gradient(170deg,#1e2d20 0%,#2a3e2c 100%);}
+.vis-2-alt::before{content:'';position:absolute;width:48%;height:58%;background:#3a5440;border-radius:4px 4px 2px 2px;top:18%;left:26%;}
+.vis-2-alt .sleeve-l{position:absolute;width:20%;height:30%;background:#3a5440;border-radius:6px;top:20%;left:10%;transform:rotate(12deg);}
+.vis-2-alt .sleeve-r{position:absolute;width:20%;height:30%;background:#3a5440;border-radius:6px;top:20%;right:10%;transform:rotate(-12deg);}
+.vis-2-alt .collar{position:absolute;width:20%;height:5%;background:#2a3e2c;border-radius:0 0 50% 50%;top:18%;left:40%;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav);background:rgba(247,245,242,.94);backdrop-filter:blur(16px);border-bottom:.5px solid var(--border);display:flex;align-items:center;padding:0 1.75rem;gap:1.5rem;transition:box-shadow .3s;}
+nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.nav-logo{font-family:var(--font-d);font-size:24px;font-weight:400;letter-spacing:.5px;color:var(--text);white-space:nowrap;flex-shrink:0;}
+.nav-logo em{color:var(--accent);font-style:italic;}
+.nav-cats{display:flex;flex:1;border-left:.5px solid var(--border);margin-left:.75rem;padding-left:.75rem;overflow:hidden;}
+.nav-cat{font-size:13px;font-weight:400;color:var(--text-2);padding:0 13px;height:var(--nav);display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;position:relative;}
+.nav-cat:hover{color:var(--text);}
+.nav-cat.active{color:var(--text);border-bottom-color:var(--accent);font-weight:500;}
+.nav-cat .ndot{position:absolute;top:15px;right:6px;width:5px;height:5px;background:var(--sale);border-radius:50%;}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surface);border:.5px solid var(--border-md);border-radius:99px;padding:7px 16px;width:200px;cursor:text;transition:all .25s;}
+.search-wrap:focus-within,.search-wrap:hover{border-color:var(--accent-mid);width:240px;box-shadow:0 0 0 3px rgba(42,92,63,.07);}
+.search-wrap svg{flex-shrink:0;color:var(--text-3);}
+.search-wrap input{border:none;background:none;font-family:var(--font-b);font-size:13px;color:var(--text);outline:none;width:100%;}
+.search-wrap input::placeholder{color:var(--text-3);}
+.icon-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:none;border:.5px solid var(--border);cursor:pointer;transition:all .2s;color:var(--text-2);position:relative;flex-shrink:0;}
+.icon-btn:hover{background:var(--surface);border-color:var(--border-md);color:var(--text);transform:scale(1.05);}
+.icon-btn .dot{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);}
+.avatar-btn{width:36px;height:36px;border-radius:50%;background:var(--accent-lt);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;border:.5px solid rgba(42,92,63,.25);transition:all .2s;flex-shrink:0;}
+.avatar-btn:hover{transform:scale(1.08);box-shadow:0 0 0 3px rgba(42,92,63,.12);}
+
+/* LAYOUT */
+.layout{display:flex;margin-top:var(--nav);min-height:calc(100vh - var(--nav));}
+
+/* SIDEBAR */
+aside{width:var(--side);flex-shrink:0;position:sticky;top:var(--nav);height:calc(100vh - var(--nav));overflow-y:auto;padding:1.5rem 1.25rem 2rem;border-right:.5px solid var(--border);background:var(--surface);}
+aside::-webkit-scrollbar{width:3px;}
+aside::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:99px;}
+.sb-sec{margin-bottom:1.75rem;}
+.sb-lbl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;}
+.sb-lbl span{font-size:11px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;}
+.filt-list{display:flex;flex-direction:column;gap:1px;}
+.filt-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text-2);}
+.filt-opt:hover{background:var(--bg);color:var(--text);}
+.filt-opt.on{background:var(--accent-lt);color:var(--accent);font-weight:500;}
+.fcheck{width:16px;height:16px;border:1.5px solid var(--border-strong);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.filt-opt.on .fcheck{background:var(--accent);border-color:var(--accent);}
+.filt-opt.on .fcheck::after{content:'';width:8px;height:5px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block;}
+.fcount{margin-left:auto;font-size:11px;color:var(--text-3);background:var(--bg);padding:1px 7px;border-radius:99px;}
+.filt-opt.on .fcount{background:rgba(42,92,63,.15);color:var(--accent);}
+.range-wrap{padding:0 10px;}
+.range-track{width:100%;height:3px;background:var(--border-md);border-radius:99px;margin:12px 0 8px;position:relative;}
+.range-fill{position:absolute;height:100%;background:var(--accent);border-radius:99px;left:8%;right:25%;}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);}
+.swatch-row{display:flex;flex-wrap:wrap;gap:8px;padding:4px 10px;}
+.sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative;}
+.sw:hover,.sw.on{border-color:var(--text);}
+.sw.on::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--text);}
+.sw.white-sw{border:1.5px solid var(--border-strong);}
+.size-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:4px 10px;}
+.sz{min-width:38px;height:32px;padding:0 10px;border:.5px solid var(--border-md);border-radius:7px;font-size:12px;color:var(--text-2);cursor:pointer;font-family:var(--font-b);background:none;transition:all .18s;}
+.sz:hover{border-color:var(--text);color:var(--text);}
+.sz.on{background:var(--text);color:#fff;border-color:var(--text);}
+
+/* MAIN */
+main{flex:1;padding:1.75rem 2rem 3rem;min-width:0;}
+
+/* HERO */
+.hero{border-radius:var(--rl);overflow:hidden;margin-bottom:1.5rem;position:relative;height:170px;background:#18170F;display:flex;align-items:center;animation:fadeUp .6s var(--ease-s) both;}
+.hero-bg{position:absolute;inset:0;overflow:hidden;}
+.hero-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#1a2e20 0%,#0d1a10 60%,#18170F 100%);}
+.hero-bg::after{content:'';position:absolute;right:0;top:0;bottom:0;width:50%;background:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 12px);}
+.hero-rack{position:absolute;right:8%;top:10%;bottom:10%;width:38%;display:flex;align-items:center;justify-content:center;gap:10px;opacity:.7;}
+.hero-garment{width:36px;height:70px;border-radius:3px;opacity:.6;}
+.hg1{background:#2d4a35;}
+.hg2{background:#c8bfb4;width:32px;}
+.hg3{background:#1a1a2e;width:38px;}
+.hg4{background:#8B6914;width:28px;height:48px;border-radius:5px;}
+.hg5{background:#2c3e2d;width:34px;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,23,15,.95) 45%,transparent);}
+.hero-content{position:relative;padding:0 2.5rem;}
+.hero-tag{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px;}
+.hero-title{font-family:var(--font-d);font-size:32px;font-weight:300;color:#fff;line-height:1.1;margin-bottom:10px;}
+.hero-title em{font-style:italic;color:#8DC4A0;}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--text);border:none;border-radius:99px;padding:8px 20px;font-size:13px;font-weight:500;font-family:var(--font-b);cursor:pointer;transition:all .2s;}
+.hero-cta:hover{background:var(--accent-lt);color:var(--accent);}
+
+/* INFO STRIP */
+.info-strip{display:flex;background:var(--surface);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem;border:.5px solid var(--border);animation:fadeUp .6s .1s var(--ease-s) both;}
+.info-item{flex:1;display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:12px;color:var(--text-2);}
+.info-item+.info-item{border-left:.5px solid var(--border);}
+.info-item strong{font-size:12px;color:var(--text);font-weight:500;}
+.info-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent);font-size:13px;}
+
+/* FILTER TAGS */
+.filter-tags{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.ftag{display:flex;align-items:center;gap:5px;background:var(--surface);border:.5px solid var(--border-md);border-radius:99px;padding:5px 12px 5px 14px;font-size:12px;color:var(--text-2);cursor:pointer;transition:all .2s;}
+.ftag:hover{border-color:var(--text);color:var(--text);}
+.ftag-x{width:14px;height:14px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;}
+
+/* PAGE HEADER */
+.pg-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:.5px solid var(--border);}
+.pg-title{font-family:var(--font-d);font-size:30px;font-weight:400;letter-spacing:-.3px;line-height:1.1;}
+.pg-sub{font-size:12px;color:var(--text-3);margin-top:3px;}
+.sort-row{display:flex;align-items:center;gap:10px;}
+.sort-sel{background:none;border:.5px solid var(--border-md);padding:7px 28px 7px 12px;border-radius:8px;font-size:12px;font-family:var(--font-b);color:var(--text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239E9C95' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.view-tog{display:flex;border:.5px solid var(--border-md);border-radius:8px;overflow:hidden;}
+.vbtn{padding:7px 9px;background:none;border:none;cursor:pointer;color:var(--text-3);display:flex;align-items:center;transition:all .2s;}
+.vbtn.on{background:var(--text);color:#fff;}
+
+/* PRODUCT CARD */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.1rem;}
+.pcard{background:var(--surface);border:.5px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:border-color .2s,transform .28s var(--ease),box-shadow .28s;position:relative;animation:fadeUp .5s var(--ease-s) both;}
+.pcard:hover{border-color:var(--border-md);transform:translateY(-5px);box-shadow:0 16px 44px rgba(0,0,0,.11);}
+.pimg{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;}
+/* image layer transitions */
+.pimg .vis-front{position:absolute;inset:0;transition:opacity .45s var(--ease-s);}
+.pimg .vis-back{position:absolute;inset:0;opacity:0;transition:opacity .45s var(--ease-s);}
+.pcard:hover .vis-front{opacity:0;}
+.pcard:hover .vis-back{opacity:1;}
+/* scale the entire pimg content */
+.pimg .inner-scale{position:absolute;inset:0;transition:transform .55s var(--ease-s);}
+.pcard:hover .inner-scale{transform:scale(1.04);}
+.wish-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.95);border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:scale(.75) rotate(-20deg);transition:all .25s var(--ease);z-index:5;}
+.pcard:hover .wish-btn{opacity:1;transform:scale(1) rotate(0);}
+.wish-btn.wished{opacity:1;transform:scale(1);background:#fff;}
+.wish-btn.wished svg{fill:var(--sale);stroke:var(--sale);}
+.pbadges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:4px;z-index:5;}
+.pbadge{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:500;letter-spacing:.02em;}
+.sale-b{background:rgba(192,65,42,.92);color:#fff;}
+.trend-b{background:rgba(42,92,63,.9);color:#fff;}
+.new-b{background:rgba(24,23,15,.78);color:#fff;}
+.qs-b{background:rgba(255,255,255,.94);color:var(--text);border:.5px solid var(--border);}
+.quick-view{position:absolute;bottom:10px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(24,23,15,.9);color:#fff;border:none;border-radius:99px;padding:7px 18px;font-size:12px;font-weight:500;font-family:var(--font-b);cursor:pointer;white-space:nowrap;opacity:0;transition:all .22s var(--ease);z-index:5;backdrop-filter:blur(4px);}
+.pcard:hover .quick-view{opacity:1;transform:translateX(-50%) translateY(0);}
+.quick-view:hover{background:var(--accent);}
+.pinfo{padding:12px 14px 14px;}
+.pname{font-size:13px;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.price-row{display:flex;align-items:baseline;gap:7px;}
+.pnow{font-size:15px;font-weight:500;color:var(--text);}
+.pwas{font-size:12px;color:var(--text-3);text-decoration:line-through;}
+.poff{font-size:11px;color:var(--sale);font-weight:500;}
+.pmeta{font-size:11px;color:var(--text-3);margin-top:4px;}
+.stars-sm{color:#C8941A;letter-spacing:.5px;}
+.cdots{display:flex;gap:4px;margin-top:8px;}
+.cdot{width:12px;height:12px;border-radius:50%;border:.5px solid rgba(0,0,0,.1);cursor:pointer;transition:transform .15s;}
+.cdot:hover{transform:scale(1.4);}
+
+/* PAGINATION */
+.pgn{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:3rem;padding-top:2rem;border-top:.5px solid var(--border);}
+.pgn-n{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:.5px solid var(--border);background:none;color:var(--text-2);font-family:var(--font-b);transition:all .18s;}
+.pgn-n:hover{border-color:var(--text);color:var(--text);}
+.pgn-n.on{background:var(--text);color:#fff;border-color:var(--text);}
+.pgn-next{padding:0 16px;height:34px;border-radius:8px;display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:.5px solid var(--border);background:none;color:var(--text-2);font-family:var(--font-b);transition:all .18s;}
+.pgn-next:hover{border-color:var(--accent);color:var(--accent);}
+
+/* MODAL */
+.m-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:background .3s;}
+.m-overlay.open{background:rgba(0,0,0,.52);pointer-events:all;}
+.modal{background:var(--surface);border-radius:var(--rx);width:880px;max-width:96vw;max-height:92vh;overflow:hidden;display:flex;position:relative;border:.5px solid var(--border);transform:scale(.94) translateY(14px);opacity:0;transition:all .35s var(--ease);}
+.m-overlay.open .modal{transform:scale(1) translateY(0);opacity:1;}
+.m-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:.5px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:18px;z-index:10;transition:all .18s;}
+.m-close:hover{background:var(--bg);color:var(--text);}
+.m-left{width:400px;flex-shrink:0;position:relative;overflow:hidden;min-height:520px;}
+.m-left .modal-vis{position:absolute;inset:0;}
+.m-img-thumbs{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;}
+.m-thumb{width:44px;height:44px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .18s;opacity:.55;background:rgba(255,255,255,.15);}
+.m-thumb:hover,.m-thumb.on{border-color:#fff;opacity:1;}
+.m-thumb .tv{width:100%;height:100%;border-radius:6px;}
+.m-right{flex:1;padding:2rem 1.75rem;overflow-y:auto;}
+.m-right::-webkit-scrollbar{width:3px;}
+.m-right::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:99px;}
+.m-cat{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px;}
+.m-title{font-family:var(--font-d);font-size:26px;font-weight:400;line-height:1.2;margin-bottom:10px;}
+.m-rating{display:flex;align-items:center;gap:8px;margin-bottom:1rem;}
+.m-stars{color:#C8941A;font-size:14px;letter-spacing:1px;}
+.m-rcount{font-size:12px;color:var(--text-3);}
+.m-badge-row{display:flex;gap:7px;margin-bottom:1.25rem;}
+.m-tag{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500;}
+.m-tag-sale{background:var(--sale-bg);color:var(--sale);}
+.m-tag-ship{background:var(--accent-lt);color:var(--accent);}
+.m-price-row{display:flex;align-items:baseline;gap:10px;padding-bottom:1.25rem;border-bottom:.5px solid var(--border);margin-bottom:1.25rem;}
+.m-price{font-family:var(--font-d);font-size:30px;font-weight:400;}
+.m-was{font-size:14px;color:var(--text-3);text-decoration:line-through;}
+.det-lbl{font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+.det-sec{margin-bottom:1.25rem;}
+.m-sizes{display:flex;flex-wrap:wrap;gap:6px;}
+.msz{min-width:44px;height:38px;padding:0 12px;border:.5px solid var(--border-md);border-radius:8px;font-size:13px;color:var(--text-2);cursor:pointer;font-family:var(--font-b);background:none;transition:all .18s;}
+.msz:hover{border-color:var(--text);color:var(--text);}
+.msz.on{background:var(--text);color:#fff;border-color:var(--text);}
+.msz.oos{opacity:.3;cursor:not-allowed;text-decoration:line-through;}
+.m-colors{display:flex;gap:8px;}
+.msw{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative;}
+.msw.on,.msw:hover{border-color:var(--text);}
+.msw.on::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--text);}
+.add-cart{width:100%;height:50px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-b);margin-top:1.5rem;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.add-cart:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px rgba(42,92,63,.28);}
+.add-cart.added{background:var(--accent);}
+.save-later{width:100%;height:44px;background:none;color:var(--text-2);border:.5px solid var(--border-md);border-radius:var(--r);font-size:13px;cursor:pointer;font-family:var(--font-b);margin-top:8px;transition:all .2s;}
+.save-later:hover{border-color:var(--text);color:var(--text);}
+.collapse-sec{border-bottom:.5px solid var(--border);}
+.collapse-sec summary{padding:12px 0;font-size:13px;font-weight:500;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--text);user-select:none;}
+.collapse-sec summary::-webkit-details-marker{display:none;}
+.collapse-sec summary::after{content:'+';color:var(--text-3);font-size:18px;font-weight:300;}
+.collapse-sec[open] summary::after{content:'−';}
+.collapse-body{padding:0 0 12px;font-size:13px;color:var(--text-2);line-height:1.75;}
+
+/* CART DRAWER */
+.cart-drw{position:fixed;top:0;right:0;bottom:0;width:370px;background:var(--surface);z-index:300;transform:translateX(100%);transition:transform .35s var(--ease-s);border-left:.5px solid var(--border);display:flex;flex-direction:column;}
+.cart-drw.open{transform:translateX(0);}
+.cart-head{padding:1.5rem 1.5rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.cart-title{font-family:var(--font-d);font-size:22px;font-weight:400;}
+.cart-close{width:32px;height:32px;border-radius:50%;border:.5px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-2);}
+.cart-body{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;}
+.cart-empty{font-size:13px;color:var(--text-3);text-align:center;padding:3rem 0;}
+.cart-item{display:flex;gap:12px;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:.5px solid var(--border);}
+.ci-img{width:68px;height:86px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--surface2);}
+.ci-img .ci-vis{width:100%;height:100%;}
+.ci-info{flex:1;}
+.ci-name{font-size:13px;color:var(--text);line-height:1.4;margin-bottom:3px;}
+.ci-meta{font-size:11px;color:var(--text-3);margin-bottom:7px;}
+.ci-price{font-size:14px;font-weight:500;}
+.ci-qty{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.qty-btn{width:26px;height:26px;border-radius:6px;border:.5px solid var(--border-md);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text-2);transition:all .15s;font-family:var(--font-b);}
+.qty-btn:hover{border-color:var(--text);color:var(--text);}
+.qty-val{font-size:13px;font-weight:500;min-width:18px;text-align:center;}
+.cart-foot{padding:1.25rem 1.5rem;border-top:.5px solid var(--border);}
+.cart-total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;}
+.cart-total-lbl{font-size:13px;color:var(--text-2);}
+.cart-total-val{font-family:var(--font-d);font-size:26px;font-weight:400;}
+.checkout-btn{width:100%;height:50px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-b);transition:all .2s;}
+.checkout-btn:hover{background:var(--accent);}
+.cart-scrim{position:fixed;inset:0;z-index:299;background:rgba(0,0,0,0);pointer-events:none;transition:background .3s;}
+.cart-scrim.open{background:rgba(0,0,0,.35);pointer-events:all;}
+
+/* PROFILE DRAWER */
+.prof-drw{width:290px;flex-shrink:0;background:var(--surface);border-left:.5px solid var(--border);position:sticky;top:var(--nav);height:calc(100vh - var(--nav));overflow-y:auto;padding:1.5rem 1.25rem;display:none;}
+.prof-drw.open{display:block;}
+.prof-av{width:54px;height:54px;border-radius:50%;background:var(--accent-lt);color:var(--accent);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1.5px solid rgba(42,92,63,.25);}
+.prof-name{font-size:16px;font-weight:500;}
+.prof-sub{font-size:12px;color:var(--text-3);margin-top:2px;margin-bottom:1.5rem;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem;}
+.stat-c{background:var(--surface2);border-radius:10px;padding:12px;text-align:center;}
+.stat-n{font-family:var(--font-d);font-size:26px;}
+.stat-l{font-size:11px;color:var(--text-3);margin-top:2px;}
+.order-g{display:flex;gap:8px;margin-bottom:1.25rem;}
+.order-it{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px;border:.5px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .18s;text-align:center;position:relative;}
+.order-it:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt);}
+.order-ic{font-size:16px;}
+.notif-card{background:var(--accent-lt);border-radius:10px;padding:14px;font-size:13px;color:var(--accent);border:.5px solid rgba(42,92,63,.18);line-height:1.65;}
+.notif-card strong{display:block;margin-bottom:4px;font-weight:500;}
+.div-line{height:.5px;background:var(--border);margin:1.25rem 0;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:500;z-index:500;transition:transform .35s var(--ease);white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.pcard:nth-child(1){animation-delay:.05s}.pcard:nth-child(2){animation-delay:.1s}.pcard:nth-child(3){animation-delay:.15s}.pcard:nth-child(4){animation-delay:.2s}.pcard:nth-child(5){animation-delay:.25s}.pcard:nth-child(6){animation-delay:.3s}.pcard:nth-child(7){animation-delay:.35s}.pcard:nth-child(8){animation-delay:.4s}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="loader-logo">StyleClear</div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+<div class="toast" id="toast"></div>
+<div class="cart-scrim" id="cartScrim" onclick="closeCart()"></div>
+
+<!-- CART DRAWER -->
+<div class="cart-drw" id="cartDrw">
+  <div class="cart-head"><div class="cart-title">Your Cart</div><button class="cart-close" onclick="closeCart()">×</button></div>
+  <div class="cart-body" id="cartBody"><div class="cart-empty">Your cart is empty.</div></div>
+  <div class="cart-foot" id="cartFoot" style="display:none;">
+    <div class="cart-total-row"><span class="cart-total-lbl">Total</span><span class="cart-total-val" id="cartTotal">$0.00</span></div>
+    <button class="checkout-btn">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" style="text-decoration:none"><div class="nav-logo">Style<em>Clear</em></div></a>
+  <div class="nav-cats">
+    <div class="nav-cat active">All</div>
+    <div class="nav-cat">Women</div>
+    <div class="nav-cat">Men</div>
+    <div class="nav-cat">Sports</div>
+    <div class="nav-cat">Curve</div>
+    <div class="nav-cat">QuickShip</div>
+    <div class="nav-cat">New In <span class="ndot"></span></div>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search styles…">
+    </div>
+    <div class="icon-btn" title="Wishlist">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <div class="icon-btn" onclick="openCart()" title="Cart">
+      <div class="dot" id="cartDot" style="display:none;">0</div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    </div>
+    <div class="avatar-btn" onclick="toggleProfile()">AD</div>
+  </div>
+</nav>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside>
+  <div class="sb-sec">
+    <div class="sb-lbl">Category <span onclick="clearFilts()">Clear all</span></div>
+    <div class="filt-list">
+      <div class="filt-opt on" onclick="tog(this)"><div class="fcheck"></div>All Items<span class="fcount">248</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Tops & T-shirts<span class="fcount">64</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Dresses<span class="fcount">52</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Bottoms<span class="fcount">41</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Outerwear<span class="fcount">29</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Activewear<span class="fcount">38</span></div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Accessories<span class="fcount">24</span></div>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Price Range</div>
+    <div class="range-wrap"><div class="range-track"><div class="range-fill"></div></div><div class="range-labels"><span>$5</span><span>$8–$85</span><span>$120+</span></div></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Color</div>
+    <div class="swatch-row">
+      <div class="sw" style="background:#1A1916;"></div>
+      <div class="sw white-sw" style="background:#fff;"></div>
+      <div class="sw on" style="background:#4A8C60;"></div>
+      <div class="sw" style="background:#C84B31;"></div>
+      <div class="sw" style="background:#4A6FA5;"></div>
+      <div class="sw" style="background:#D4AC0D;"></div>
+      <div class="sw" style="background:#A67C68;"></div>
+      <div class="sw" style="background:#D4A5A5;"></div>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Size</div>
+    <div class="size-wrap">
+      <button class="sz">XS</button><button class="sz on">S</button><button class="sz">M</button>
+      <button class="sz">L</button><button class="sz">XL</button><button class="sz">XXL</button><button class="sz">3XL</button>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Style</div>
+    <div class="filt-list">
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Casual</div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Formal</div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Streetwear</div>
+      <div class="filt-opt" onclick="tog(this)"><div class="fcheck"></div>Y2K / Vintage</div>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg">
+      <div class="hero-rack">
+        <div class="hero-garment hg1"></div>
+        <div class="hero-garment hg2"></div>
+        <div class="hero-garment hg3"></div>
+        <div class="hero-garment hg4"></div>
+        <div class="hero-garment hg5"></div>
+      </div>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Spring / Summer 2025 · HCI Redesign</div>
+      <div class="hero-title">Hot Sellers<br><em>Designed for clarity</em></div>
+      <div class="hero-sub">Clean browsing · No pop-ups · No cognitive overload</div>
+      <button class="hero-cta">Browse now <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <!-- INFO STRIP -->
+  <div class="info-strip">
+    <div class="info-item"><div class="info-icon">🚚</div><div><strong>Free shipping</strong> on orders over $35</div></div>
+    <div class="info-item"><div class="info-icon">🛡</div><div><strong>No hidden fees</strong> · Transparent pricing</div></div>
+    <div class="info-item"><div class="info-icon">↩</div><div><strong>Free returns</strong> · 35-day window</div></div>
+  </div>
+
+  <!-- FILTER TAGS -->
+  <div class="filter-tags" id="filterTags">
+    <span style="font-size:12px;color:var(--text-3);">Active filters:</span>
+    <div class="ftag" onclick="removeTag(this)">Size S <div class="ftag-x">×</div></div>
+    <div class="ftag" onclick="removeTag(this)">Green <div class="ftag-x">×</div></div>
+    <div class="ftag" onclick="removeTag(this)">$8–$85 <div class="ftag-x">×</div></div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="pg-head">
+    <div><h1 class="pg-title">Hot Sellers</h1><p class="pg-sub">248 items · Showing 1–8</p></div>
+    <div class="sort-row">
+      <span style="font-size:12px;color:var(--text-3);">Sort</span>
+      <select class="sort-sel"><option>Most popular</option><option>Newest first</option><option>Price: low–high</option><option>Price: high–low</option><option>Best rated</option></select>
+      <div class="view-tog">
+        <button class="vbtn on" id="gridBtn" onclick="setView('grid')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+        <button class="vbtn" id="listBtn" onclick="setView('list')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <div class="prod-grid" id="prodGrid">
+
+    <!-- CARD MACRO: front visual + back visual + badges + info -->
+
+    <!-- 1. Dark Graphic Sweatshirt -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="1" data-title="Batman X SHEIN Graphic Sweatshirt" data-cat="Graphic Tops"
+      data-price="7.92" data-was="15.84" data-off="50" data-rating="4.2" data-reviews="1,240"
+      data-vis="vis-1" data-vis2="vis-1-alt" data-colors="#1A1916,#3A3A6A,#C84B31">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-1"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div><div class="logo-badge">BATMAN × SHEIN</div></div>
+          <div class="vis-back prod-visual vis-1-alt"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge trend-b">Trending</span><span class="pbadge sale-b">-50%</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Batman X SHEIN Women's Graphic Sweatshirt</div>
+        <div class="price-row"><span class="pnow">$7.92</span><span class="pwas">$15.84</span><span class="poff">-50%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★☆</span> 4.2 · 1,240 sold</div>
+        <div class="cdots"><div class="cdot" style="background:#1A1916;"></div><div class="cdot" style="background:#3A3A6A;"></div><div class="cdot" style="background:#C84B31;"></div></div>
+      </div>
+    </div>
+
+    <!-- 2. White Sports Tee -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="2" data-title="Men Sports Tees & Tanks" data-cat="Activewear"
+      data-price="14.69" data-was="24.99" data-off="41" data-rating="4.5" data-reviews="830"
+      data-vis="vis-2" data-vis2="vis-2-alt" data-colors="#FFFFFF,#1A1916,#4A6FA5">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-2"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div><div class="stripe"></div></div>
+          <div class="vis-back prod-visual vis-2-alt"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge qs-b">⚡ QuickShip</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Men Sports Tees & Tanks Bundle</div>
+        <div class="price-row"><span class="pnow">$14.69</span><span class="pwas">$24.99</span><span class="poff">-41%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★★</span> 4.5 · XS–3XL</div>
+        <div class="cdots"><div class="cdot" style="background:#fff;border:.5px solid #ccc;"></div><div class="cdot" style="background:#1A1916;"></div><div class="cdot" style="background:#4A6FA5;"></div></div>
+      </div>
+    </div>
+
+    <!-- 3. Oversized Graphic Tee -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="3" data-title="Streetwear Oversized Graphic Tee" data-cat="Streetwear"
+      data-price="11.99" data-was="19.99" data-off="40" data-rating="4.0" data-reviews="320"
+      data-vis="vis-3" data-vis2="vis-1" data-colors="#2C3E2D,#1A1916">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-3"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div></div>
+          <div class="vis-back prod-visual vis-1"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge new-b">New In</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Old E Streetwear Oversized Graphic Tee</div>
+        <div class="price-row"><span class="pnow">$11.99</span><span class="pwas">$19.99</span><span class="poff">-40%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★☆</span> 4.0 · Unisex · S–XXL</div>
+        <div class="cdots"><div class="cdot" style="background:#2C3E2D;"></div><div class="cdot" style="background:#1A1916;"></div></div>
+      </div>
+    </div>
+
+    <!-- 4. Floral Midi Dress -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="4" data-title="Boho Floral Wrap Midi Dress" data-cat="Dresses"
+      data-price="18.50" data-was="29.00" data-off="36" data-rating="4.7" data-reviews="2,100"
+      data-vis="vis-4" data-vis2="vis-7" data-colors="#D4A5A5,#D4AC0D,#4A6FA5,#2C3E2D">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-4"><div class="collar"></div><div class="flower1"></div><div class="flower2"></div><div class="flower3"></div><div class="belt"></div></div>
+          <div class="vis-back prod-visual vis-7"><div class="collar"></div><div class="btn1"></div><div class="btn2"></div><div class="btn3"></div><div class="belt"></div><div class="shadow"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge trend-b">Peaked</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Boho Floral Wrap Midi Dress</div>
+        <div class="price-row"><span class="pnow">$18.50</span><span class="pwas">$29.00</span><span class="poff">-36%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★★</span> 4.7 · XS–XL · 4 colors</div>
+        <div class="cdots"><div class="cdot" style="background:#D4A5A5;"></div><div class="cdot" style="background:#D4AC0D;"></div><div class="cdot" style="background:#4A6FA5;"></div><div class="cdot" style="background:#2C3E2D;"></div></div>
+      </div>
+    </div>
+
+    <!-- 5. Cardigan -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="5" data-title="Ribbed Knit Oversized Cardigan" data-cat="Knitwear"
+      data-price="22.00" data-was="35.00" data-off="37" data-rating="4.6" data-reviews="670"
+      data-vis="vis-5" data-vis2="vis-5" data-colors="#C8BEB4,#1A1916,#D4A5A5">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-5"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div><div class="button1"></div><div class="button2"></div><div class="button3"></div></div>
+          <div class="vis-back prod-visual vis-5" style="filter:hue-rotate(20deg) brightness(.95);"><div class="sleeve-l"></div><div class="sleeve-r"></div><div class="collar"></div><div class="button1"></div><div class="button2"></div><div class="button3"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge sale-b">-37%</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Ribbed Knit Oversized Cardigan Set</div>
+        <div class="price-row"><span class="pnow">$22.00</span><span class="pwas">$35.00</span><span class="poff">-37%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★★</span> 4.6 · Cozy · XS–2XL</div>
+        <div class="cdots"><div class="cdot" style="background:#C8BEB4;"></div><div class="cdot" style="background:#1A1916;"></div><div class="cdot" style="background:#D4A5A5;"></div></div>
+      </div>
+    </div>
+
+    <!-- 6. Cargo Trousers -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="6" data-title="Cargo Wide-Leg Trousers" data-cat="Bottoms"
+      data-price="16.99" data-was="28.00" data-off="39" data-rating="4.3" data-reviews="520"
+      data-vis="vis-6" data-vis2="vis-6" data-colors="#6B7A60,#A67C68,#1A1916">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-6"><div class="waist"></div><div class="pocket-l"></div><div class="pocket-r"></div></div>
+          <div class="vis-back prod-visual vis-6" style="filter:brightness(.85);"><div class="waist"></div><div class="pocket-l"></div><div class="pocket-r"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge new-b">New</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Cargo Wide-Leg Trousers</div>
+        <div class="price-row"><span class="pnow">$16.99</span><span class="pwas">$28.00</span><span class="poff">-39%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★☆</span> 4.3 · Unisex · XS–3XL</div>
+        <div class="cdots"><div class="cdot" style="background:#6B7A60;"></div><div class="cdot" style="background:#A67C68;"></div><div class="cdot" style="background:#1A1916;"></div></div>
+      </div>
+    </div>
+
+    <!-- 7. Linen Shirt Dress -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="7" data-title="Linen Blend Summer Shirt Dress" data-cat="Dresses"
+      data-price="24.99" data-was="39.99" data-off="38" data-rating="4.8" data-reviews="980"
+      data-vis="vis-7" data-vis2="vis-4" data-colors="#EDE6DC,#D4A5A5,#4A6FA5">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-7"><div class="collar"></div><div class="btn1"></div><div class="btn2"></div><div class="btn3"></div><div class="belt"></div><div class="shadow"></div></div>
+          <div class="vis-back prod-visual vis-4"><div class="collar"></div><div class="flower1"></div><div class="flower2"></div><div class="flower3"></div><div class="belt"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge trend-b">Editor's Pick</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Linen Blend Summer Shirt Dress</div>
+        <div class="price-row"><span class="pnow">$24.99</span><span class="pwas">$39.99</span><span class="poff">-38%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★★</span> 4.8 · XS–XL</div>
+        <div class="cdots"><div class="cdot" style="background:#EDE6DC;border:.5px solid #ccc;"></div><div class="cdot" style="background:#D4A5A5;"></div><div class="cdot" style="background:#4A6FA5;"></div></div>
+      </div>
+    </div>
+
+    <!-- 8. Leather Bag -->
+    <div class="pcard" onclick="openModal(this)"
+      data-id="8" data-title="Minimalist PU Leather Crossbody Bag" data-cat="Accessories"
+      data-price="12.50" data-was="22.00" data-off="43" data-rating="4.4" data-reviews="410"
+      data-vis="vis-8" data-vis2="vis-8" data-colors="#1A1916,#C8BEB4,#A67C68">
+      <div class="pimg">
+        <div class="inner-scale">
+          <div class="vis-front prod-visual vis-8"><div class="strap"></div><div class="clasp"></div><div class="stitch"></div></div>
+          <div class="vis-back prod-visual vis-8" style="filter:brightness(.8) saturate(1.2);"><div class="strap"></div><div class="clasp"></div><div class="stitch"></div></div>
+        </div>
+        <div class="pbadges"><span class="pbadge sale-b">-43%</span></div>
+        <button class="wish-btn" onclick="wishToggle(event,this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="quick-view" onclick="qv(event,this.closest('.pcard'))">Quick View</button>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Minimalist PU Leather Crossbody Bag</div>
+        <div class="price-row"><span class="pnow">$12.50</span><span class="pwas">$22.00</span><span class="poff">-43%</span></div>
+        <div class="pmeta"><span class="stars-sm">★★★★☆</span> 4.4 · 3 colors</div>
+        <div class="cdots"><div class="cdot" style="background:#1A1916;"></div><div class="cdot" style="background:#C8BEB4;"></div><div class="cdot" style="background:#A67C68;"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /prod-grid -->
+
+  <div class="pgn">
+    <button class="pgn-n on">1</button><button class="pgn-n">2</button><button class="pgn-n">3</button>
+    <span style="color:var(--text-3);padding:0 4px;font-size:13px;">…</span><button class="pgn-n">31</button>
+    <button class="pgn-next">Next <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  </div>
+</main>
+
+<!-- PROFILE DRAWER -->
+<div class="prof-drw" id="profDrw">
+  <div class="prof-av">AD</div>
+  <div class="prof-name">Antarikshad</div>
+  <div class="prof-sub">Member since 2024 · My Profile →</div>
+  <div class="stat-grid">
+    <div class="stat-c"><div class="stat-n">25</div><div class="stat-l">Coupons</div></div>
+    <div class="stat-c"><div class="stat-n">0</div><div class="stat-l">Points</div></div>
+  </div>
+  <div class="sb-lbl">My Orders</div>
+  <div class="order-g">
+    <div class="order-it"><div class="order-ic">📄</div>Unpaid</div>
+    <div class="order-it"><div class="order-ic">📦</div>Processing</div>
+    <div class="order-it" style="position:relative;"><div class="order-ic">🚚</div>Shipped<div style="position:absolute;top:-4px;right:3px;width:15px;height:15px;background:var(--sale);color:#fff;font-size:9px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;">2</div></div>
+    <div class="order-it"><div class="order-ic">↩</div>Returns</div>
+  </div>
+  <div class="div-line"></div>
+  <div class="notif-card"><strong>Your savings</strong>25 coupons available — up to $15 off orders over $50 at checkout.</div>
+</div>
+</div><!-- /layout -->
+
+<!-- MODAL -->
+<div class="m-overlay" id="mOverlay" onclick="closeModal(event)">
+  <div class="modal" id="theModal">
+    <button class="m-close" onclick="closeModalDirect()">×</button>
+    <div class="m-left">
+      <div class="modal-vis prod-visual" id="mVis"></div>
+      <div class="m-img-thumbs" id="mThumbs"></div>
+    </div>
+    <div class="m-right">
+      <div class="m-cat" id="mCat"></div>
+      <h2 class="m-title" id="mTitle"></h2>
+      <div class="m-rating"><span class="m-stars" id="mStars">★★★★☆</span><span class="m-rcount" id="mRcount"></span></div>
+      <div class="m-badge-row"><span class="m-tag m-tag-sale" id="mSaleTag"></span><span class="m-tag m-tag-ship">Free shipping</span></div>
+      <div class="m-price-row"><span class="m-price" id="mPrice"></span><span class="m-was" id="mWas"></span></div>
+      <div class="det-sec">
+        <div class="det-lbl">Select Size</div>
+        <div class="m-sizes">
+          <button class="msz">XS</button><button class="msz on">S</button><button class="msz">M</button>
+          <button class="msz">L</button><button class="msz">XL</button><button class="msz oos">XXL</button>
+        </div>
+      </div>
+      <div class="det-sec">
+        <div class="det-lbl">Color</div>
+        <div class="m-colors" id="mColors"></div>
+      </div>
+      <button class="add-cart" id="mAddBtn" onclick="addToCart()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Add to cart
+      </button>
+      <button class="save-later">♡ Save to wishlist</button>
+      <div style="margin-top:1.5rem;">
+        <details class="collapse-sec"><summary>Product details</summary><div class="collapse-body">Premium quality fabric with a relaxed, oversized fit. Machine washable. Available in multiple colorways. Model is 5'7" wearing size S.</div></details>
+        <details class="collapse-sec"><summary>Size guide</summary><div class="collapse-body">S fits UK 8–10 / US 4–6. For a looser fit, size up one. Full size chart available on request.</div></details>
+        <details class="collapse-sec"><summary>Shipping & returns</summary><div class="collapse-body">Ships within 5–10 business days. Free QuickShip upgrade available. Free returns within 35 days.</div></details>
+        <details class="collapse-sec"><summary>Sustainability</summary><div class="collapse-body">Part of our conscious collection. Made using recycled materials where possible. 100% recyclable packaging.</div></details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart = [], curCard = null;
+
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('gone'),1800));
+window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',scrollY>10));
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function tog(el){el.classList.toggle('on');}
+function clearFilts(){document.querySelectorAll('.filt-opt.on').forEach(e=>e.classList.remove('on'));showToast('Filters cleared');}
+function removeTag(el){el.style.opacity='0';el.style.transform='scale(0)';el.style.transition='all .2s';setTimeout(()=>el.remove(),200);}
+function setView(v){const g=document.getElementById('prodGrid');document.getElementById('gridBtn').classList.toggle('on',v==='grid');document.getElementById('listBtn').classList.toggle('on',v==='list');g.style.gridTemplateColumns=v==='list'?'1fr':'repeat(auto-fill,minmax(210px,1fr))';}
+
+document.querySelectorAll('.nav-cat').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.nav-cat').forEach(x=>x.classList.remove('active'));c.classList.add('active');}));
+document.querySelectorAll('.sz').forEach(b=>b.addEventListener('click',()=>{b.closest('.size-wrap').querySelectorAll('.sz').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+document.querySelectorAll('.msz:not(.oos)').forEach(b=>b.addEventListener('click',()=>{b.closest('.m-sizes').querySelectorAll('.msz').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+document.querySelectorAll('.sw').forEach(s=>s.addEventListener('click',()=>{s.closest('.swatch-row').querySelectorAll('.sw').forEach(x=>x.classList.remove('on'));s.classList.add('on');}));
+document.querySelectorAll('.pgn-n').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.pgn-n').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+
+function wishToggle(e,btn){e.stopPropagation();btn.classList.toggle('wished');showToast(btn.classList.contains('wished')?'♡ Added to wishlist':'Removed from wishlist');}
+function qv(e,card){e.stopPropagation();openModal(card);}
+
+function buildVis(cls){
+  const d=document.createElement('div');
+  d.className='prod-visual '+cls;
+  const map={
+    'vis-1':['sleeve-l','sleeve-r','collar','logo-badge'],
+    'vis-1-alt':['sleeve-l','sleeve-r','collar'],
+    'vis-2':['sleeve-l','sleeve-r','collar','stripe'],
+    'vis-2-alt':['sleeve-l','sleeve-r','collar'],
+    'vis-3':['sleeve-l','sleeve-r','collar'],
+    'vis-4':['collar','flower1','flower2','flower3','belt'],
+    'vis-5':['sleeve-l','sleeve-r','collar','button1','button2','button3'],
+    'vis-6':['waist','pocket-l','pocket-r'],
+    'vis-7':['collar','btn1','btn2','btn3','belt','shadow'],
+    'vis-8':['strap','clasp','stitch']
+  };
+  (map[cls]||[]).forEach(c=>{const el=document.createElement('div');el.className=c;d.appendChild(el);});
+  return d;
+}
+
+function openModal(card){
+  curCard=card;
+  const d=card.dataset;
+  document.getElementById('mCat').textContent=d.cat;
+  document.getElementById('mTitle').textContent=d.title;
+  document.getElementById('mPrice').textContent='$'+d.price;
+  document.getElementById('mWas').textContent='$'+d.was;
+  document.getElementById('mSaleTag').textContent='Save '+d.off+'%';
+  const r=parseFloat(d.rating);
+  document.getElementById('mStars').textContent='★'.repeat(Math.floor(r))+'☆'.repeat(5-Math.floor(r));
+  document.getElementById('mRcount').textContent=d.rating+' · '+d.reviews+' reviews';
+
+  const vis=document.getElementById('mVis');
+  vis.className='modal-vis prod-visual '+d.vis;
+  vis.innerHTML='';
+  buildVis(d.vis).childNodes.forEach(n=>vis.appendChild(n.cloneNode(true)));
+
+  const thumbs=document.getElementById('mThumbs');
+  thumbs.innerHTML='';
+  [{v:d.vis,label:'Front'},{v:d.vis2,label:'Back'}].forEach((t,i)=>{
+    const th=document.createElement('div');
+    th.className='m-thumb'+(i===0?' on':'');
+    const tv=document.createElement('div');
+    tv.className='tv prod-visual '+t.v;
+    buildVis(t.v).childNodes.forEach(n=>tv.appendChild(n.cloneNode(true)));
+    th.appendChild(tv);
+    th.onclick=()=>{
+      document.querySelectorAll('.m-thumb').forEach(x=>x.classList.remove('on'));
+      th.classList.add('on');
+      vis.className='modal-vis prod-visual '+t.v;
+      vis.innerHTML='';
+      buildVis(t.v).childNodes.forEach(n=>vis.appendChild(n.cloneNode(true)));
+    };
+    thumbs.appendChild(th);
+  });
+
+  const colors=document.getElementById('mColors');
+  colors.innerHTML='';
+  (d.colors||'').split(',').forEach((c,i)=>{
+    const sw=document.createElement('div');
+    sw.className='msw'+(i===0?' on':'');
+    sw.style.background=c;
+    if(c==='#FFFFFF'||c==='#EDE6DC')sw.style.border='1.5px solid #ccc';
+    sw.onclick=()=>{document.querySelectorAll('.msw').forEach(x=>x.classList.remove('on'));sw.classList.add('on');};
+    colors.appendChild(sw);
+  });
+
+  const btn=document.getElementById('mAddBtn');
+  btn.classList.remove('added');
+  btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add to cart';
+
+  document.getElementById('mOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModalDirect(){document.getElementById('mOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModal(e){if(e.target===document.getElementById('mOverlay'))closeModalDirect();}
+
+function addToCart(){
+  if(!curCard)return;
+  const d=curCard.dataset;
+  const sz=document.querySelector('.msz.on');
+  const size=sz?sz.textContent:'S';
+  const ex=cart.find(i=>i.id===d.id&&i.size===size);
+  if(ex)ex.qty++;
+  else cart.push({id:d.id,title:d.title,price:parseFloat(d.price),vis:d.vis,size,qty:1});
+  const btn=document.getElementById('mAddBtn');
+  btn.classList.add('added');btn.textContent='✓ Added!';
+  updateCartUI();showToast('Added to cart · Size '+size);
+  setTimeout(()=>{closeModalDirect();openCart();},900);
+}
+
+function updateCartUI(){
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  const dot=document.getElementById('cartDot');
+  dot.textContent=count;dot.style.display=count>0?'flex':'none';
+  document.getElementById('cartTotal').textContent='$'+total.toFixed(2);
+  const body=document.getElementById('cartBody');
+  if(!cart.length){body.innerHTML='<div class="cart-empty">Your cart is empty.</div>';document.getElementById('cartFoot').style.display='none';return;}
+  document.getElementById('cartFoot').style.display='block';
+  body.innerHTML=cart.map((item,idx)=>{
+    const v=buildVis(item.vis);v.style.cssText='width:100%;height:100%;';
+    const tmp=document.createElement('div');tmp.appendChild(v);
+    return`<div class="cart-item"><div class="ci-img"><div class="ci-vis prod-visual ${item.vis}">${tmp.innerHTML}</div></div><div class="ci-info"><div class="ci-name">${item.title}</div><div class="ci-meta">Size: ${item.size}</div><div class="ci-price">$${(item.price*item.qty).toFixed(2)}</div><div class="ci-qty"><button class="qty-btn" onclick="chQty(${idx},-1)">−</button><span class="qty-val">${item.qty}</span><button class="qty-btn" onclick="chQty(${idx},1)">+</button></div></div></div>`;
+  }).join('');
+}
+
+function chQty(idx,d){cart[idx].qty+=d;if(cart[idx].qty<=0)cart.splice(idx,1);updateCartUI();}
+function openCart(){document.getElementById('cartDrw').classList.add('open');document.getElementById('cartScrim').classList.add('open');}
+function closeCart(){document.getElementById('cartDrw').classList.remove('open');document.getElementById('cartScrim').classList.remove('open');}
+function toggleProfile(){document.getElementById('profDrw').classList.toggle('open');}
+</script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="StyleClear — HCI research project by Antariksha Dhanure. Redesigning fast-fashion interfaces to reduce cognitive overload.">
+<title>StyleClear · Antariksha Dhanure · HCI Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Figtree:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0E1410;
+  --paper:#F5F2EC;
+  --paper2:#EDE9DF;
+  --green:#2A5C3F;
+  --green-mid:#4A8C60;
+  --green-lt:#EBF4EE;
+  --gold:#B8851A;
+  --gold-lt:#FDF3DC;
+  --muted:#7A8A78;
+  --border:rgba(14,20,16,.1);
+  --border-md:rgba(14,20,16,.18);
+  --white:#FFFFFF;
+  --font-display:'Cormorant',serif;
+  --font-body:'Figtree',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+
+html{scroll-behavior:smooth;font-size:16px;}
+
+body{
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor{
+  position:fixed;width:10px;height:10px;background:var(--green);
+  border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s,width .2s,height .2s,background .2s;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1.5px solid var(--green);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .12s ease-out,width .2s,height .2s,border-color .2s,opacity .2s;
+  opacity:.6;
+}
+body:has(a:hover) .cursor{width:16px;height:16px;background:var(--gold);}
+body:has(a:hover) .cursor-ring{width:50px;height:50px;border-color:var(--gold);opacity:.4;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:58px;
+  background:rgba(245,242,236,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--font-display);font-size:22px;font-weight:400;
+  color:var(--ink);letter-spacing:.02em;
+  text-decoration:none;
+}
+.nav-logo em{color:var(--green);font-style:italic;}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-link{
+  font-size:13px;font-weight:400;color:var(--muted);
+  text-decoration:none;letter-spacing:.01em;
+  transition:color .2s;
+  cursor:none;
+}
+.nav-link:hover{color:var(--ink);}
+.nav-cta{
+  background:var(--green);color:#fff;
+  padding:7px 18px;border-radius:99px;
+  font-size:13px;font-weight:500;
+  text-decoration:none;
+  transition:all .2s;cursor:none;
+}
+.nav-cta:hover{background:var(--ink);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  margin-top:58px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-left{
+  padding:6rem 3rem 4rem 4rem;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+  z-index:2;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--green);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:1.75rem;
+}
+.eyebrow-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(52px,6vw,88px);
+  font-weight:300;line-height:1.0;
+  letter-spacing:-.02em;
+  color:var(--ink);
+  margin-bottom:1.75rem;
+}
+.hero-title em{
+  font-style:italic;color:var(--green);display:block;
+}
+.hero-desc{
+  font-size:16px;font-weight:300;color:var(--muted);
+  line-height:1.75;max-width:440px;margin-bottom:2.5rem;
+}
+.hero-desc strong{color:var(--ink);font-weight:500;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{
+  background:var(--ink);color:#fff;
+  padding:13px 28px;border-radius:8px;
+  font-size:14px;font-weight:500;text-decoration:none;
+  transition:all .2s;cursor:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:var(--green);}
+.btn-secondary{
+  background:transparent;color:var(--ink);
+  padding:13px 28px;border-radius:8px;
+  border:1.5px solid var(--border-md);
+  font-size:14px;font-weight:400;text-decoration:none;
+  transition:all .2s;cursor:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-secondary:hover{border-color:var(--ink);}
+
+.hero-right{
+  position:relative;
+  background:var(--green);
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Decorative pattern in hero-right */
+.hero-pattern{
+  position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.06) 39px,rgba(255,255,255,.06) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.06) 39px,rgba(255,255,255,.06) 40px);
+}
+.hero-mockup{
+  position:relative;z-index:2;
+  width:85%;max-width:480px;
+  background:var(--paper);
+  border-radius:16px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  overflow:hidden;
+  transform:rotate(1.5deg);
+  transition:transform .4s ease;
+}
+.hero-mockup:hover{transform:rotate(0deg) scale(1.02);}
+/* Fake browser chrome */
+.mockup-chrome{
+  background:#E8E4DC;padding:10px 14px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid var(--border);
+}
+.chrome-dot{width:10px;height:10px;border-radius:50%;}
+.chrome-url{
+  flex:1;background:var(--paper);border-radius:6px;
+  padding:4px 10px;font-family:var(--font-mono);
+  font-size:10px;color:var(--muted);margin-left:6px;
+}
+.mockup-body{padding:0;overflow:hidden;}
+/* Mini app preview inside mockup */
+.mini-nav{
+  background:var(--paper);padding:8px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.mini-logo{font-family:var(--font-display);font-size:14px;color:var(--ink);font-style:italic;}
+.mini-search{
+  background:var(--paper2);border-radius:99px;
+  padding:3px 10px;font-size:9px;color:var(--muted);
+  font-family:var(--font-mono);
+}
+.mini-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;
+  background:var(--border);
+}
+.mini-card{
+  background:var(--paper);padding:0;overflow:hidden;
+  aspect-ratio:3/4;position:relative;
+  display:flex;align-items:flex-end;
+}
+.mini-card-img{position:absolute;inset:0;}
+.mc1{background:linear-gradient(160deg,#1E2C21,#2A3E2D);}
+.mc2{background:linear-gradient(160deg,#C8BEB4,#B0A898);}
+.mc3{background:linear-gradient(160deg,#8B6914,#6A5010);}
+.mc4{background:linear-gradient(160deg,#2D2D3E,#1A1A2E);}
+.mc5{background:linear-gradient(160deg,#C9A87C,#B8936A);}
+.mc6{background:linear-gradient(160deg,#3A4235,#566050);}
+.mini-card-info{
+  position:relative;z-index:2;width:100%;
+  background:var(--paper);padding:4px 5px;
+}
+.mini-price{font-size:8px;font-weight:600;color:var(--ink);}
+.mini-badge{
+  position:absolute;top:4px;left:4px;
+  background:var(--green);color:#fff;
+  font-size:6px;padding:1px 4px;border-radius:2px;font-weight:600;
+}
+.mini-info-strip{
+  background:var(--green-lt);padding:5px 8px;
+  font-size:7.5px;color:var(--green);
+  display:flex;gap:8px;
+  font-family:var(--font-mono);
+}
+
+/* ── STATS ROW ── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.stat-cell{
+  padding:2.5rem 2rem;
+  border-right:1px solid var(--border);
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.stat-cell:last-child{border-right:none;}
+.stat-cell::before{
+  content:'';position:absolute;inset:0;
+  background:var(--green-lt);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .4s ease;
+}
+.stat-cell:hover::before{transform:scaleY(1);}
+.stat-num{
+  font-family:var(--font-display);
+  font-size:clamp(36px,4vw,56px);
+  font-weight:400;color:var(--green);
+  line-height:1;display:block;
+  position:relative;z-index:1;
+}
+.stat-label{
+  font-size:12px;color:var(--muted);margin-top:6px;
+  line-height:1.4;position:relative;z-index:1;
+}
+
+/* ── SECTIONS ── */
+.section{padding:6rem 4rem;}
+.section-label{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--green);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:1rem;display:flex;align-items:center;gap:10px;
+}
+.section-label::after{
+  content:'';flex:0 0 40px;height:1px;background:var(--green-mid);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(36px,4vw,58px);
+  font-weight:300;line-height:1.1;
+  letter-spacing:-.01em;margin-bottom:1.5rem;
+}
+.section-title em{color:var(--green);font-style:italic;}
+.section-body{
+  font-size:15px;font-weight:300;color:var(--muted);
+  line-height:1.8;max-width:640px;
+}
+
+/* ── ABOUT GRID ── */
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:start;
+}
+.about-image-block{
+  background:var(--ink);border-radius:12px;
+  overflow:hidden;aspect-ratio:4/3;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.about-pattern{
+  position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(74,158,106,.08) 20px,rgba(74,158,106,.08) 21px);
+}
+.about-quote{
+  position:relative;z-index:2;
+  padding:2.5rem;text-align:center;
+}
+.quote-mark{
+  font-family:var(--font-display);font-size:80px;
+  color:var(--green);line-height:.5;opacity:.5;
+}
+.quote-text{
+  font-family:var(--font-display);font-size:22px;font-style:italic;
+  color:#fff;line-height:1.5;margin:1rem 0;
+}
+.quote-attr{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+
+/* ── PROJECT PHASES ── */
+.phases{display:flex;flex-direction:column;gap:0;margin-top:3rem;}
+.phase{
+  display:grid;grid-template-columns:60px 1fr;gap:1.5rem;
+  padding:1.75rem 0;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.phase:last-child{border-bottom:none;}
+.phase-num{
+  font-family:var(--font-display);font-size:44px;font-weight:300;
+  color:var(--border-md);line-height:1;
+  align-self:start;
+}
+.phase-content{}
+.phase-title{font-size:16px;font-weight:600;margin-bottom:.5rem;}
+.phase-desc{font-size:14px;color:var(--muted);line-height:1.7;}
+.phase-tag{
+  display:inline-block;margin-top:.75rem;
+  background:var(--green-lt);color:var(--green);
+  font-size:11px;padding:3px 10px;border-radius:99px;
+  font-family:var(--font-mono);
+}
+
+/* ── FINDINGS GRID ── */
+.findings-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;margin-top:3rem;
+}
+.finding-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:12px;padding:1.75rem;
+  position:relative;overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.finding-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.08);}
+.finding-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--green);
+}
+.finding-num{
+  font-family:var(--font-display);font-size:52px;font-weight:300;
+  color:var(--green);line-height:1;margin-bottom:.5rem;
+  display:block;
+}
+.finding-text{font-size:14px;color:var(--muted);line-height:1.65;}
+.finding-text strong{color:var(--ink);display:block;margin-bottom:.25rem;font-size:15px;}
+
+/* ── PRINCIPLES GRID ── */
+.principles-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:1px;background:var(--border);
+  margin-top:3rem;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.principle{
+  background:var(--white);padding:2rem;
+  transition:background .2s;
+}
+.principle:hover{background:var(--green-lt);}
+.principle-icon{font-size:28px;margin-bottom:.75rem;display:block;}
+.principle-title{font-size:15px;font-weight:600;margin-bottom:.4rem;}
+.principle-desc{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* ── COMPARISON SECTION ── */
+.comparison{
+  background:var(--ink);
+  padding:6rem 4rem;
+  position:relative;overflow:hidden;
+}
+.comparison::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(
+    90deg,transparent,transparent 80px,rgba(74,158,106,.04) 80px,rgba(74,158,106,.04) 81px);
+}
+.comparison .section-label{color:var(--green-mid);}
+.comparison .section-title{color:#fff;}
+.comp-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2rem;margin-top:3rem;
+}
+.comp-card{
+  border-radius:12px;padding:2rem;position:relative;z-index:1;
+}
+.comp-bad{
+  background:rgba(192,65,42,.08);
+  border:1px solid rgba(192,65,42,.2);
+}
+.comp-good{
+  background:rgba(74,158,106,.1);
+  border:1px solid rgba(74,158,106,.3);
+}
+.comp-head{
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:1.25rem;
+  font-family:var(--font-mono);
+}
+.comp-bad .comp-head{color:#E07060;}
+.comp-good .comp-head{color:var(--green-mid);}
+.comp-item{
+  display:flex;gap:10px;align-items:flex-start;
+  margin-bottom:.85rem;font-size:14px;line-height:1.55;
+}
+.comp-bad .comp-item{color:rgba(255,255,255,.6);}
+.comp-good .comp-item{color:rgba(255,255,255,.8);}
+.comp-bullet{flex-shrink:0;margin-top:3px;font-size:12px;}
+.comp-bad .comp-bullet{color:#E07060;}
+.comp-good .comp-bullet{color:var(--green-mid);}
+
+/* ── DEMO CTA ── */
+.demo-cta{
+  padding:6rem 4rem;
+  text-align:center;
+  background:var(--paper2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.demo-cta .section-label{justify-content:center;}
+.demo-cta .section-label::after{display:none;}
+.demo-cta .section-title{margin-left:auto;margin-right:auto;}
+.demo-cta .section-body{margin:0 auto 2.5rem;}
+.demo-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--green);color:#fff;
+  padding:16px 36px;border-radius:10px;
+  font-size:15px;font-weight:500;
+  text-decoration:none;
+  transition:all .25s;cursor:none;
+  box-shadow:0 8px 24px rgba(42,92,63,.3);
+}
+.demo-btn:hover{background:var(--ink);box-shadow:0 12px 32px rgba(0,0,0,.2);}
+.demo-btn svg{transition:transform .2s;}
+.demo-btn:hover svg{transform:translateX(4px);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--ink);color:rgba(255,255,255,.5);
+  padding:3rem 4rem;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1.5rem;
+}
+.footer-logo{
+  font-family:var(--font-display);font-size:20px;color:#fff;
+  font-style:italic;
+}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.footer-link{
+  font-size:12px;color:rgba(255,255,255,.4);
+  text-decoration:none;
+  transition:color .2s;cursor:none;font-family:var(--font-mono);
+}
+.footer-link:hover{color:#fff;}
+.footer-meta{font-size:11px;font-family:var(--font-mono);}
+
+/* ── ANIMATIONS ── */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .about-grid,.comp-grid{grid-template-columns:1fr;}
+  .findings-grid{grid-template-columns:1fr 1fr;}
+  .principles-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .stat-cell:nth-child(2){border-right:none;}
+  .stat-cell:nth-child(3){border-right:1px solid var(--border);}
+  .section{padding:4rem 2rem;}
+  .comparison{padding:4rem 2rem;}
+  .demo-cta{padding:4rem 2rem;}
+  footer{padding:2rem;}
+}
+@media(max-width:600px){
+  .findings-grid,.stats-row{grid-template-columns:1fr;}
+  .stat-cell{border-right:none!important;}
+  nav{padding:0 1.25rem;}
+  .nav-links .nav-link:not(.nav-cta){display:none;}
+  .hero-left{padding:3rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Style<em>Clear</em></a>
+  <div class="nav-links">
+    <a href="#about" class="nav-link">About</a>
+    <a href="#findings" class="nav-link">Findings</a>
+    <a href="#design" class="nav-link">Design</a>
+    <a href="prototype.html" class="nav-cta">Live Prototype →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      HCI Final Project · Spring 2025 · Antariksha Dhanure
+    </div>
+    <h1 class="hero-title">
+      Redesigning<br>fast-fashion<br><em>for your mind.</em>
+    </h1>
+    <p class="hero-desc">
+      <strong>StyleClear</strong> is a research-backed desktop interface redesign that reduces cognitive overload in fast-fashion shopping apps — without sacrificing what makes them commercially useful.
+    </p>
+    <div class="hero-actions">
+      <a href="prototype.html" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+        View Live Prototype
+      </a>
+      <a href="#about" class="btn-secondary">
+        Read the Research ↓
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-pattern"></div>
+    <div class="hero-mockup">
+      <div class="mockup-chrome">
+        <div class="chrome-dot" style="background:#FF5F57;"></div>
+        <div class="chrome-dot" style="background:#FFBD2E;"></div>
+        <div class="chrome-dot" style="background:#28C840;"></div>
+        <div class="chrome-url">styleclear.design · Hot Sellers</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mini-nav">
+          <span class="mini-logo">StyleClear</span>
+          <span>All &nbsp;·&nbsp; Women &nbsp;·&nbsp; Men &nbsp;·&nbsp; Sports</span>
+          <span class="mini-search">🔍 Search</span>
+        </div>
+        <div class="mini-grid">
+          <div class="mini-card"><div class="mini-card-img mc1"></div><div class="mini-badge">Trending</div><div class="mini-card-info"><div class="mini-price">$7.92</div></div></div>
+          <div class="mini-card"><div class="mini-card-img mc2"></div><div class="mini-card-info"><div class="mini-price">$14.69</div></div></div>
+          <div class="mini-card"><div class="mini-card-img mc3"></div><div class="mini-badge" style="background:#1A1916;">New</div><div class="mini-card-info"><div class="mini-price">$12.50</div></div></div>
+          <div class="mini-card"><div class="mini-card-img mc4"></div><div class="mini-card-info"><div class="mini-price">$11.99</div></div></div>
+          <div class="mini-card"><div class="mini-card-img mc5"></div><div class="mini-badge">Peaked</div><div class="mini-card-info"><div class="mini-price">$18.50</div></div></div>
+          <div class="mini-card"><div class="mini-card-img mc6"></div><div class="mini-card-info"><div class="mini-price">$16.99</div></div></div>
+        </div>
+        <div class="mini-info-strip">
+          🚚 Free shipping &nbsp;·&nbsp; 🛡 No hidden fees &nbsp;·&nbsp; ↩ Free returns
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-cell reveal">
+    <span class="stat-num">87%</span>
+    <div class="stat-label">of users felt overwhelmed<br>by pop-ups &amp; flash sales</div>
+  </div>
+  <div class="stat-cell reveal">
+    <span class="stat-num">3.2×</span>
+    <div class="stat-label">faster product discovery<br>in the redesigned interface</div>
+  </div>
+  <div class="stat-cell reveal">
+    <span class="stat-num">−69%</span>
+    <div class="stat-label">reduction in perceived<br>interface clutter</div>
+  </div>
+  <div class="stat-cell reveal">
+    <span class="stat-num">n=42</span>
+    <div class="stat-label">survey participants<br>ages 18–29</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="about-grid">
+    <div>
+      <div class="section-label reveal">The Problem</div>
+      <h2 class="section-title reveal">Fast-fashion apps are<br><em>deliberately overwhelming.</em></h2>
+      <p class="section-body reveal">
+        Open SHEIN and you're hit with pop-ups, countdown timers, floating discount badges, and an infinitely scrolling grid that offers no natural stopping point. This isn't accidental — it's designed to manufacture urgency. But the cognitive cost is real: overwhelmed users abandon carts, make regretted purchases, and disengage entirely.
+      </p>
+      <p class="section-body reveal" style="margin-top:1rem;">
+        This project asks: <strong>can we reduce that overload without undermining the platform's commercial utility?</strong> The answer, grounded in Cognitive Load Theory and Choice Overload research, is yes.
+      </p>
+    </div>
+    <div class="about-image-block reveal">
+      <div class="about-pattern"></div>
+      <div class="about-quote">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">The clean one felt like it actually trusted me.</div>
+        <div class="quote-attr">— Survey participant, age 21</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phases reveal" style="margin-top:4rem;">
+    <div class="phase">
+      <div class="phase-num">01</div>
+      <div class="phase-content">
+        <div class="phase-title">Heuristic Audit</div>
+        <div class="phase-desc">Evaluated the SHEIN interface against Nielsen's ten usability heuristics. Identified four recurring failure categories: unprompted pop-ups, nine competing visual elements per product card, promotional navigation that obscures product-type access, and persistently fabricated urgency cues.</div>
+        <span class="phase-tag">Discovery</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">02</div>
+      <div class="phase-content">
+        <div class="phase-title">Mixed-Methods Survey (n = 42)</div>
+        <div class="phase-desc">Distributed a 15-question online survey to university-age SHEIN users. Measured cognitive load, decision fatigue, cart abandonment behavior, and redesign preference after five-minute prototype exposure. Two open-ended questions captured qualitative themes.</div>
+        <span class="phase-tag">Research</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">03</div>
+      <div class="phase-content">
+        <div class="phase-title">StyleClear Prototype + Evaluation</div>
+        <div class="phase-desc">Built a fully interactive desktop web prototype implementing evidence-based HCI principles. Participants completed a timed task on both interfaces. Comparative evaluation measured task completion time, perceived clutter, and preference across four dimensions.</div>
+        <span class="phase-tag">Design + Validate</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINDINGS -->
+<section class="section" id="findings" style="background:var(--paper2);border-top:1px solid var(--border);">
+  <div class="section-label reveal">Key Findings</div>
+  <h2 class="section-title reveal">What 42 users<br><em>actually told us.</em></h2>
+  <p class="section-body reveal">Likert-scale data, timed task evaluation, and thematic analysis of open-ended responses produced a consistent picture: the problem is urgency design, not product volume.</p>
+
+  <div class="findings-grid">
+    <div class="finding-card reveal">
+      <span class="finding-num">87%</span>
+      <div class="finding-text"><strong>Overwhelmed by urgency design</strong>Agreed or strongly agreed that pop-ups and flash sales create feelings of overwhelm (Q2 ≥ 4 on 5-point Likert scale).</div>
+    </div>
+    <div class="finding-card reveal">
+      <span class="finding-num">71%</span>
+      <div class="finding-text"><strong>Cart abandonment from overload</strong>Reported abandoning a cart at least once because the interface felt too overwhelming to make a decision.</div>
+    </div>
+    <div class="finding-card reveal">
+      <span class="finding-num">64%</span>
+      <div class="finding-text"><strong>Preferred the redesign</strong>Chose StyleClear over SHEIN after just 5 minutes of exposure — the aesthetic-usability effect at work.</div>
+    </div>
+    <div class="finding-card reveal">
+      <span class="finding-num">3.2×</span>
+      <div class="finding-text"><strong>Faster task completion</strong>Mean task time: 94 seconds in StyleClear vs. 301 seconds in SHEIN for the same product-finding task.</div>
+    </div>
+    <div class="finding-card reveal">
+      <span class="finding-num">−74%</span>
+      <div class="finding-text"><strong>Pop-up clutter reduction</strong>Perceived clutter from pop-ups dropped from 4.6 to 1.2 on a 5-point scale after switching to the redesign.</div>
+    </div>
+    <div class="finding-card reveal">
+      <span class="finding-num">3</span>
+      <div class="finding-text"><strong>Qualitative themes identified</strong>Manufactured urgency erodes trust · Structural disorganization impairs findability · Information density causes decision paralysis.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison" id="design">
+  <div class="section-label">Design Decisions</div>
+  <h2 class="section-title" style="max-width:600px;">Every change was<br><em>theory-driven.</em></h2>
+
+  <div class="comp-grid">
+    <div class="comp-card comp-bad">
+      <div class="comp-head">✕ &nbsp;Original Interface Problems</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>Unprompted modal pop-ups interrupt browsing flow on every entry</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>9 competing visual elements per product card (badges, prices, icons, overlays)</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>Countdown timers and "Only 3 left!" warnings manufactured regardless of actual stock</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>Filters buried behind navigation — interrupts browsing to access them</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>Infinite scroll with no defined browsing unit or stopping point</div>
+      <div class="comp-item"><span class="comp-bullet">✕</span>Promotional categories (Flash Sale, Trending) obscure product-type navigation</div>
+    </div>
+    <div class="comp-card comp-good">
+      <div class="comp-head">✓ &nbsp;StyleClear Solutions</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>Zero unsolicited pop-ups — promotional info moved to a static info strip</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>Max 5 elements per product card — progressive disclosure hides the rest</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>All urgency cues eliminated — sale badges retained as small, muted, single-position only</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>Persistent sidebar filter panel — always visible, never interrupts browsing</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>Pagination replaces infinite scroll — defined browsing unit per session</div>
+      <div class="comp-item"><span class="comp-bullet">✓</span>Functional categories (Women, Men, Sports) + attribute-based sidebar navigation</div>
+    </div>
+  </div>
+
+  <div class="principles-grid" style="margin-top:3rem;border-radius:12px;overflow:hidden;">
+    <div class="principle">
+      <span class="principle-icon">🧠</span>
+      <div class="principle-title">Cognitive Load Theory</div>
+      <div class="principle-desc" style="color:rgba(255,255,255,.5);">Sweller (1988) — reducing extraneous load frees working memory for actual decision-making. Every removed element is a direct CLT intervention.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-icon">📐</span>
+      <div class="principle-title">Gestalt Proximity</div>
+      <div class="principle-desc" style="color:rgba(255,255,255,.5);">Related product attributes grouped visually. Whitespace separates unrelated content. The eye follows intentional structure, not competitive chaos.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-icon">🔍</span>
+      <div class="principle-title">Progressive Disclosure</div>
+      <div class="principle-desc" style="color:rgba(255,255,255,.5);">Shipping, materials, size guides — present but hidden behind expandable accordions. You access detail when you want it, not before.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-icon">⚖️</span>
+      <div class="principle-title">Choice Overload Research</div>
+      <div class="principle-desc" style="color:rgba(255,255,255,.5);">Iyengar &amp; Lepper (2000) — excess options create stress, not satisfaction. The redesign shows the same products with structured hierarchy, not fewer choices.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO CTA -->
+<section class="demo-cta">
+  <div class="section-label">Try It</div>
+  <h2 class="section-title" style="max-width:500px;margin:0 auto 1rem;">See the difference<br><em>for yourself.</em></h2>
+  <p class="section-body">The prototype is fully interactive — hover effects, product modals, cart drawer, sidebar filters, wishlist. Everything works. No login required.</p>
+  <a href="prototype.html" class="demo-btn">
+    Open StyleClear Prototype
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <p style="margin-top:1.5rem;font-size:12px;color:var(--muted);font-family:var(--font-mono);">
+    Built with vanilla HTML/CSS/JS · No frameworks · Fully offline · GitHub Pages ready
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">StyleClear</div>
+  <div class="footer-links">
+    <a href="index.html" class="footer-link">Home</a>
+    <a href="prototype.html" class="footer-link">Prototype</a>
+    <a href="https://github.com/antariksha-dhanure/styleclear" class="footer-link" target="_blank">GitHub</a>
+  </div>
+  <div class="footer-meta">
+    HCI Final Project · Antariksha Dhanure · UBID 50676220 · University at Buffalo · Spring 2025
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+  function animateRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animateRing);}
+  animateRing();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
+  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+  reveals.forEach(r=>observer.observe(r));
+
+  // Stagger children of grid containers
+  document.querySelectorAll('.findings-grid,.phases,.stats-row').forEach(grid=>{
+    grid.querySelectorAll('.reveal').forEach((el,i)=>{
+      el.style.transitionDelay=`${i*0.08}s`;
+    });
+  });
+</script>
+</body>
+</html>
