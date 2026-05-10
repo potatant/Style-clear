@@ -1,13 +1,13 @@
 # StyleClear — HCI Final Project
 
 **Reducing Cognitive Overload in Fast-Fashion Mobile Shopping Apps**  
-Antariksha Dhanure · UBID 50676220 · University at Buffalo · HCI Spring 2025
+Antariksha Dhanure  UBID 50676220  University at Buffalo 
 
 ---
 
 ## 🌐 Live Site
 
-**[styleclear](https://potatant.github.io/Style-clear)**
+**[styleclear](https://potatant.github.io/Style-clear/)**
 
 ---
 
@@ -92,4 +92,3 @@ styleclear/
 
 ---
 
-*HCI Final Project · University at Buffalo · Spring 2025*
