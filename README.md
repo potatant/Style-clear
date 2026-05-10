@@ -65,15 +65,6 @@ styleclear/
 
 ---
 
-## Deploy to GitHub Pages
-
-1. Fork or clone this repo
-2. Go to **Settings → Pages**
-3. Set source to **Deploy from branch → main → / (root)**
-4. Your site will be live at `https://yourusername.github.io/styleclear`
-
----
-
 ## Tech Stack
 
 - Vanilla HTML, CSS, JavaScript — zero dependencies, zero frameworks
